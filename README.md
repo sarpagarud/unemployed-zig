@@ -15,3 +15,12 @@ Most face temporary barriers—economy, skills gaps, location etc. not permanent
 $$
 Unemployment Rate = \dfrac{Unemployed Workers}{Total Labor Force} \times 100
 $$
+
+
+## Sources
+- ILOSTAT
+- BLS
+- OECD and Eurostat
+- National Statistical Offices
+- World Bank
+- IMF
