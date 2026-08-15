@@ -2,6 +2,7 @@
 
 > [!NOTE]
 > The whole purpose of unemployed zig repo is to understand unemployment.
+> And learn Zig programming language at the same time.
 
 ## un·employed [ˌʌnɪmˈplɔɪd]
 Unemployment is the state of wanting work but lacking a job. The unemployed are not unemployable. 
