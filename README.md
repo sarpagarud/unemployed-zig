@@ -7,8 +7,8 @@
 > Repository may contain human generated as well as AI generated code. 
 
 ## un·employed [ˌʌnɪmˈplɔɪd]
-Unemployment is the state of wanting work but lacking a job. The unemployed are not unemployable. 
-Most face temporary barriers—economy, skills gaps, location, trust etc. not permanent inability.
+Unemployment is the state of wanting work but lacking a job. The unemployed are not unemployable.  
+Most face temporary barriers—economy, skills gaps, location, trust etc. not permanent inability.  
 
 ## Measurement 
 
