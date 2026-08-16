@@ -10,6 +10,31 @@
 Unemployment is the state of wanting work but lacking a job. The unemployed are not unemployable.  
 Most face temporary barriers—economy, skills gaps, location, trust etc. not permanent inability.  
 
+## Installation
+
+```bash
+lsb_release -a
+```
+
+```bash
+wget https://ziglang.org/download/0.16.0/zig-x86_64-linux-0.16.0.tar.xz
+unzip zig-x86_64-linux-0.16.0.tar.xz
+cd zig-x86_64-linux-0.16.0
+export PATH="$PATH:~/zig-x86_64-linux-0.16.0"
+```
+
+## Run
+
+```bash
+zig run ~/samples/basic/hello.zig
+```
+
+## Build
+
+```bash
+zig build-exe ~/samples/basic/hello.zig
+```
+
 ## Measurement 
 
 [https://en.wikipedia.org/wiki/Unemployment](https://en.wikipedia.org/wiki/Unemployment)
