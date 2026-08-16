@@ -43,7 +43,7 @@ $$
 Unemployment Rate = \dfrac{Unemployed Workers}{Total Labor Force} \times 100
 $$
 
-
+[Check](https://github.com/sarpagarud/unemployed-zig/blob/main/src/lib/calculations.zig) to see calculations
 ## Sources
 - ILOSTAT
 - BLS
