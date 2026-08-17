@@ -268,4 +268,47 @@ const Unemployed = struct {
   }
 };
 
+const OkunsLaw = struct {
+  deltaU: f64,
+  currentUnemploymentRate: f64,
+  naturalUnemploymentRate: f64,
+  okunCoefficient: f64,
+  trendGrowth: f64,
+  predictedGdpGrowth: f64,
+  outputGap: f64,
+  potential_gdp: f64,
+  actual_gdp: f64,
+  
+  pub fn init(
+    trendGrowth: f64, okunCoefficient: f64, 
+    currentUnemploymentRate: f64, 
+    naturalUnemploymentRate: f64
+  ) OkunsLaw {
+    return OkunsLaw{
+      .deltaU = 0.0,
+      .currentUnemploymentRate = 0.0,
+      .naturalUnemploymentRate = 0.0,
+      .okunCoefficient = okunCoefficient,
+      .trendGrowth = trendGrowth,
+      .predictedGdpGrowth = 0.0,
+      .outputGap = 0.0,
+      .potential_gdp = 0.0,
+      .actual_gdp = 0.0,
+    };
+  }
+
+  pub fn calculate_predicted_gdp_growth() void {
+    self.outputGap = self.okunCoefficient * (self.currentUnemploymentRate - self.naturalUnemploymentRate);
+  }
+
+  pub fn calculate_delta_u() void {
+    self.deltaU = trendGrowth - self.okunCoefficient * (self.currentUnemploymentRate - self.naturalUnemploymentRate);
+  }
+
+  pub fn calculate_predicted_gdp_growth() void {
+    self.predictedGdpGrowth = trendGrowth - okunCoefficient * deltaU;
+  }
+
+};
+
 //syntax
