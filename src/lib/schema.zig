@@ -83,28 +83,40 @@ const LU_U = struct {
       return (count/total)*100.0;
   }
 
-  pub fn calculate_U1() bool {
-    self.U1 = self.calculate_rate(1.0, 1.0);
+  pub fn calculate_U1(unemployed_gte_15_weeks: f64, total_labor_force: f64) bool {
+    self.U1 = self.calculate_rate(unemployed_gte_15_weeks, total_labor_force);
   }
 
-  pub fn calculate_U2() bool {
-    self.U2 = self.calculate_rate(1.0, 1.0);
+  pub fn calculate_U2(unemployed_with_lost_jobs: f64, unemployed_who_had_temp_jobs: f64, total_labor_force: f64) bool {
+    self.U2 = self.calculate_rate(
+      unemployed_with_lost_jobs + unemployed_who_had_temp_jobs, 
+      total_labor_force
+    );
   }
 
-  pub fn calculate_U3() bool {
-    self.U3 = self.calculate_rate(1.0, 1.0);
+  pub fn calculate_U3(total_unemployed: f64, total_labor_force: f64) bool {
+    self.U3 = self.calculate_rate(total_unemployed, total_labor_force);
   }
 
-  pub fn calculate_U4() bool {
-    self.U4 = self.calculate_rate(1.0, 1.0);
+  pub fn calculate_U4(u3: f64, discouraged_workers: f64, total_labor_force: f64) bool {
+    self.U4 = self.calculate_rate(
+      u3 + discouraged_workers, 
+      total_labor_force
+    );
   }
 
-  pub fn calculate_U5() bool {
-    self.U5 = self.calculate_rate(1.0, 1.0);
+  pub fn calculate_U5(u4: f64, marginally_attached: f64, total_labor_force: f64) bool {
+    self.U5 = self.calculate_rate(
+      u4 + marginally_attached, 
+      total_labor_force
+    );
   }
 
-  pub fn calculate_U6() bool {
-    self.U6 = self.calculate_rate(1.0, 1.0);
+  pub fn calculate_U6(u5: f64, involuntary_part_time: f64, total_labor_force: f64) bool {
+    self.U6 = self.calculate_rate(
+      u5 + involuntary_part_time, 
+      total_labor_force
+    );
   }
 
   pub fn calculate_U1() bool {
