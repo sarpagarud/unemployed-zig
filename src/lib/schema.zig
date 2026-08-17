@@ -79,60 +79,95 @@ const LU_U = struct {
     };
   }
 
-  pub fn calculate_rate(count: f64, total: f64) bool {
+  pub fn calculate_rate(count: f64, total: f64) f64 {
       return (count/total)*100.0;
   }
 
-  pub fn calculate_U1(unemployed_gte_15_weeks: f64, total_labor_force: f64) bool {
+  pub fn calculate_U1(unemployed_gte_15_weeks: f64, total_labor_force: f64) void {
     self.U1 = self.calculate_rate(unemployed_gte_15_weeks, total_labor_force);
   }
 
-  pub fn calculate_U2(unemployed_with_lost_jobs: f64, unemployed_who_had_temp_jobs: f64, total_labor_force: f64) bool {
+  pub fn calculate_U2(unemployed_with_lost_jobs: f64, unemployed_who_had_temp_jobs: f64, total_labor_force: f64) void {
     self.U2 = self.calculate_rate(
       unemployed_with_lost_jobs + unemployed_who_had_temp_jobs, 
       total_labor_force
     );
   }
 
-  pub fn calculate_U3(total_unemployed: f64, total_labor_force: f64) bool {
+  pub fn calculate_U3(total_unemployed: f64, total_labor_force: f64) void {
     self.U3 = self.calculate_rate(total_unemployed, total_labor_force);
   }
 
-  pub fn calculate_U4(u3: f64, discouraged_workers: f64, total_labor_force: f64) bool {
+  pub fn calculate_U4(discouraged_workers: f64, total_labor_force: f64) void {
     self.U4 = self.calculate_rate(
-      u3 + discouraged_workers, 
-      total_labor_force
+      self.U3 + discouraged_workers, 
+      total_labor_force + discouraged_workers
     );
   }
 
-  pub fn calculate_U5(u4: f64, marginally_attached: f64, total_labor_force: f64) bool {
+  pub fn calculate_U5(marginally_attached: f64, total_labor_force: f64) void {
     self.U5 = self.calculate_rate(
-      u4 + marginally_attached, 
-      total_labor_force
+      self.U4 + marginally_attached, 
+      total_labor_force + marginally_attached
     );
   }
 
-  pub fn calculate_U6(u5: f64, involuntary_part_time: f64, total_labor_force: f64) bool {
+  pub fn calculate_U6(involuntary_part_time: f64, total_labor_force: f64) void {
     self.U6 = self.calculate_rate(
-      u5 + involuntary_part_time, 
-      total_labor_force
+      self.U5 + involuntary_part_time, 
+      total_labor_force + involuntary_part_time
     );
   }
 
-  pub fn calculate_U1() bool {
-    self.U1 = self.calculate_rate(1.0, 1.0);
+  pub fn calculate_LU1(unemployed: f64, labor_force: f64) void {
+    self.LU1 = self.calculate_rate(unemployed, labor_force);
   }
 
-  pub fn calculate_LU2() bool {
-    self.LU2 = self.calculate_rate(1.0, 1.0);
+  pub fn calculate_LU2(unemployed: f64, time_related_unemployed: f64, total_labor_force: f64) void {
+    self.LU2 = self.calculate_rate(
+      unemployed + time_related_unemployed, 
+      total_labor_force + time_related_unemployed
+    );
   }
 
-  pub fn calculate_LU3() bool {
-    self.LU3 = self.calculate_rate(1.0, 1.0);
+  pub fn calculate_LU3(unemployed: f64, potential_labor_force: f64, total_labor_force: f64) void {
+    self.LU3 = self.calculate_rate(
+      unemployed + potential_labor_force, 
+      total_labor_force + potential_labor_force
+    );
   }
 
-  pub fn calculate_LU4() bool {
-    self.LU4 = self.calculate_rate(1.0, 1.0);
+  pub fn calculate_LU4() void {
+    self.LU4 = self.LU1 + self.LU2 + self.LU3;
+  }
+
+  pub fn calculate_u(
+    unemployed_gte_15_weeks: f64, 
+    unemployed_with_lost_jobs: f64, 
+    unemployed_who_had_temp_jobs: f64, 
+    total_unemployed: f64,
+    discouraged_workers: f64, 
+    marginally_attached: f64, 
+    involuntary_part_time: f64,
+    total_labor_force: f64
+  ) void {
+    self.calculate_U1(unemployed_gte_15_weeks, total_labor_force);
+    self.calculate_U2(unemployed_with_lost_jobs, unemployed_who_had_temp_jobs, total_labor_force);
+    self.calculate_U3(total_unemployed, total_labor_force);
+    self.calculate_U4(discouraged_workers, total_labor_force);
+    self.calculate_U5(marginally_attached, total_labor_force);
+    self.calculate_U6(involuntary_part_time, total_labor_force);
+  }
+
+  // TODO: check how to use "self"
+  pub fn calculate_lu(unemployed: f64, 
+    time_related_unemployed: f64, potential_labor_force: f64, 
+    labor_force: f64
+  ) void {
+    self.calculate_LU1(unemployed, labor_force);
+    self.calculate_LU2(unemployed, time_related_unemployed, labor_force);
+    self.calculate_LU3(unemployed, potential_labor_force, labor_force);
+    self.calculate_LU4();
   }
 
 };
