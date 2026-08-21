@@ -14,6 +14,9 @@ pub fn main(init: std.process.Init) !void {
         std.debug.print("{s}\n", .{arg});
     }
 
+    const home = init.environ_map.get("HOME") orelse "(no HOME)";
+    std.debug.print("home: {s}\n", .{home});
+
     try imf.get_imf_data(init.io, init.gpa);
 
 }
