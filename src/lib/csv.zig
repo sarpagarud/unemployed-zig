@@ -1,6 +1,14 @@
 const std = @import("std");
 
-pub fn get_csv_line(list: *std.ArrayList([]const u8), line: []const u8) void {
+const Csv = struct {
+  headers: [][]const u8,
+  rows: std.StringHashMap([]const u8),
+};
+
+pub fn get_csv_line(
+  list: *std.ArrayList([]const u8), 
+  line: []const u8
+) void {
   if (line.len == 0) return;
   var cols = std.mem.splitScalar(u8, line, ',');
   while (cols.next()) |col| {
@@ -15,7 +23,7 @@ pub fn get_csv_data(
   io: std.Io,
   allocator: std.mem.Allocator,
   csv_file_path: []const u8
-)  {
+) Csv {
   var arena = std.heap.ArenaAllocator.init(allocator);
   defer arena.deinit();
   const a = arena.allocator();
@@ -30,7 +38,7 @@ pub fn get_csv_data(
 
   var lines = std.mem.splitScalar(u8, csv_text, '\n');
   var headers = std.ArrayList([]const u8).init(a);
-  var rows = std.ArrayList([]const u8).init(a);
+  var rows = std.StringHashMap([]const u8).init(a);
   var i: usize = 0;
   for (lines) |line| {
     get_csv_line(headers, line);
@@ -46,4 +54,8 @@ pub fn get_csv_data(
     }
     rows.append(row_map);
   }
+  return Csv{
+    .headers = try headers.toOwnedSlice();
+    .rows = try rows.toOwnedSlice();
+  };
 }
