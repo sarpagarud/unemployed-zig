@@ -20,6 +20,11 @@ pub fn build(b: *std.Build) void {
         }),
     });
     b.installArtifact(exe);
+    b.installDirectory(.{
+        .source_dir = b.path("data"),
+        .install_dir = .prefix,
+        .install_subdir = "share/unemployed-zig",
+    });
 }
 
 // syntax
