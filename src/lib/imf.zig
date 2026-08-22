@@ -13,7 +13,7 @@ pub fn get_imf_data(
   const path = globals.data.get("data_path").?;
   //var buf: [256]u8 = undefined;
   //const csv_path = try std.fmt.bufPrint(&buf, "{s}{s}", .{ path, "weoall.csv" });
-  const csv_path = try std.fs.path.resolve(allocator, &.{ cwd, path, "weo.csv" });
+  const csv_path = try std.fs.path.resolve(allocator, &.{ cwd, path, "test.csv" });
   defer allocator.free(csv_path); 
   std.debug.print("abs {s}\n", .{csv_path});
   //const csv_data = try csv.get_csv_data(io, allocator, csv_path);

@@ -67,6 +67,9 @@ pub fn get_csv_data(
 
   var lines = std.mem.splitScalar(u8, csv_text, '\n');
   var headers: std.ArrayList([]const u8) = .empty;
+  defer {
+    headers.deinit(a);
+  }
   var rows = std.StringHashMap([]const u8).init(a);
   //var i: usize = 0;
   while (lines.next()) |line| {
