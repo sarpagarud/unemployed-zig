@@ -2,10 +2,11 @@ const std = @import("std");
 
 const Csv = struct {
   headers: [][]const u8,
-  rows: std.StringHashMap([]const u8),
+  //rows: std.StringHashMap([]const u8),
 
   pub fn deinit(self: *Csv) void {
-    self.rows.deinit();
+    _ = self;
+    //self.rows.deinit();
   }
 };
 
@@ -63,44 +64,57 @@ pub fn get_csv_data(
     a,
     .unlimited,
   );
-  // defer allocator.free(csv_text);
+  defer allocator.free(csv_text);
 
   var lines = std.mem.splitScalar(u8, csv_text, '\n');
   var headers: std.ArrayList([]const u8) = .empty;
   defer {
+    for(headers.items) |h|{
+      std.debug.print("{s}\n", .{h});
+      a.free(h);
+    }
     headers.deinit(a);
   }
   var rows = std.StringHashMap([]const u8).init(a);
+  defer {
+      var rit = rows.iterator();
+      while (rit.next()) |e| {
+        allocator.free(e.value_ptr.*);
+      }
+      rows.deinit();
+  }
   //var i: usize = 0;
   while (lines.next()) |line| {
     try get_csv_line(a, &headers, line);
     break;
   }
   
-  while (lines.next()) |line| {
-    var row: std.ArrayList([]const u8) = .empty;
-    var row_map = std.StringHashMap([]const u8).init(a);
-    try get_csv_line(a, &row, line);
+  //while (lines.next()) |line| {
+  //  var row: std.ArrayList([]const u8) = .empty;
+  //  defer {
+  //    for(row.items) |h|{
+  //      a.free(h);
+  //    }
+  //    row.deinit(a);
+  //  }
+  //  var row_map = std.StringHashMap([]const u8).init(a);
+  //  defer {
+  //    row_map.deinit();
+  //  }
+  //  try get_csv_line(a, &row, line);
     //std.debug.print("{s}\n", .{line});
-    for (row.items, 0..) |value, j| {
-      try row_map.put(headers.items[j], value);
-    }
-    var it = row_map.iterator();
-    while (it.next()) |entry| {
-        const value_copy = try allocator.dupe(u8, entry.value_ptr.*);
-        try rows.put(entry.key_ptr.*, value_copy);
-    }
-    defer {
-        var rit = row_map.iterator();
-        while (rit.next()) |e| {
-            allocator.free(e.value_ptr.*);
-        }
-        row_map.deinit();
-    }
-  }
+  //  for (row.items, 0..) |value, j| {
+  //    try row_map.put(headers.items[j], value);
+  //  }
+  //  var it = row_map.iterator();
+  //  while (it.next()) |entry| {
+  //      const value_copy = try allocator.dupe(u8, entry.value_ptr.*);
+  //      try rows.put(entry.key_ptr.*, value_copy);
+  //  }
+  //}
   std.debug.print("{s}\n", .{"x"});
   return Csv{
     .headers = try headers.toOwnedSlice(allocator),
-    .rows = rows
+    //.rows = rows
   };
 }

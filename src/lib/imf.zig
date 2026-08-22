@@ -17,8 +17,23 @@ pub fn get_imf_data(
   defer allocator.free(csv_path); 
   std.debug.print("abs {s}\n", .{csv_path});
   //const csv_data = try csv.get_csv_data(io, allocator, csv_path);
-  _ = try csv.get_csv_data(io, allocator, csv_path);
-  //defer csv_data.deinit();
+  std.debug.print("{s}\n", .{"1"});
+  var csv_data = try csv.get_csv_data(io, allocator, csv_path);
+  defer {
+    for(csv_data.headers) |h|{
+      std.debug.print("x: {s}\n", .{h});
+      allocator.free(h);
+    }
+    allocator.free(csv_data.headers);
+    //var it = csv_data.rows.iterator();
+    //while (it.next()) |e| {
+    //  std.debug.print("x: {s}\n", .{e.value_ptr.*});
+    //  allocator.free(e.value_ptr.*);
+    //}
+    csv_data.deinit();
+  }
+  std.debug.print("{s}\n", .{"2"});
+  
   //for(csv_data.headers) |h| {
   //  std.debug.print("{s}\n", .{h});
   //}
