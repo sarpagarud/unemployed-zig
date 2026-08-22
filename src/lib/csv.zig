@@ -2,7 +2,7 @@ const std = @import("std");
 
 const Csv = struct {
   headers: [][]const u8,
-  //rows: std.StringHashMap([]const u8),
+  //rows: std.ArrayList(std.StringHashMap([]const u8)), //std.StringHashMap([]const u8),
 
   pub fn deinit(self: *Csv) void {
     _ = self;
@@ -75,13 +75,16 @@ pub fn get_csv_data(
     }
     headers.deinit(a);
   }
-  var rows = std.StringHashMap([]const u8).init(a);
+  var rows: std.ArrayList(std.StringHashMap([]const u8)) = .empty;// = std.StringHashMap([]const u8).init(a);
   defer {
-      var rit = rows.iterator();
+    for(rows.items) |h|{
+      var rit = h.iterator();
       while (rit.next()) |e| {
         allocator.free(e.value_ptr.*);
       }
-      rows.deinit();
+      h.deinit();
+    }
+    rows.deinit();
   }
   //var i: usize = 0;
   while (lines.next()) |line| {
@@ -106,6 +109,7 @@ pub fn get_csv_data(
   //  for (row.items, 0..) |value, j| {
   //    try row_map.put(headers.items[j], value);
   //  }
+  //  try rows.append(a, row_map);
   //  var it = row_map.iterator();
   //  while (it.next()) |entry| {
   //      const value_copy = try allocator.dupe(u8, entry.value_ptr.*);
