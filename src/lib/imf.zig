@@ -21,20 +21,30 @@ pub fn get_imf_data(
   var csv_data = try csv.get_csv_data(io, allocator, csv_path);
   defer {
     for(csv_data.headers) |h|{
-      std.debug.print("x: {s}\n", .{h});
       allocator.free(h);
     }
     allocator.free(csv_data.headers);
-    //var it = csv_data.rows.iterator();
-    //while (it.next()) |e| {
-    //  std.debug.print("x: {s}\n", .{e.value_ptr.*});
-    //  allocator.free(e.value_ptr.*);
-    //}
+    defer {
+      for(csv_data.rows.items) |*h|{
+        var rit = h.iterator();
+        while (rit.next()) |e| {
+          allocator.free(e.value_ptr.*);
+        }
+        h.deinit();
+      }
+      csv_data.rows.deinit(allocator);
+    }
     csv_data.deinit();
   }
   std.debug.print("{s}\n", .{"2"});
   
-  //for(csv_data.headers) |h| {
-  //  std.debug.print("{s}\n", .{h});
-  //}
+  for(csv_data.headers) |h| {
+    std.debug.print("{s}\n", .{h});
+  }
+  for(csv_data.rows.items) |h| {
+    var it = h.iterator();
+    while (it.next()) |e| {
+      std.debug.print("{s} = {s}\n", .{ e.key_ptr.*, e.value_ptr.* });
+    }
+  }
 }
