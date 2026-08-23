@@ -21,6 +21,7 @@ wget https://ziglang.org/download/0.16.0/zig-x86_64-linux-0.16.0.tar.xz
 unzip zig-x86_64-linux-0.16.0.tar.xz
 cd zig-x86_64-linux-0.16.0
 export PATH="$PATH:~/zig-x86_64-linux-0.16.0"
+zig fetch --save git+https://github.com/sarpagarud/zig-core
 ```
 
 ## Run
