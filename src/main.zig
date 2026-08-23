@@ -1,6 +1,7 @@
 const std = @import("std");
 const calculations = @import("calculations");
 const imf = @import("lib/imf.zig");
+const zig_core = @import("zig-core");
 
 pub fn main(init: std.process.Init) !void {
     //try std.Io.File.stdout().writeStreamingAll(init.io, "Hello, World!\n");
@@ -17,6 +18,9 @@ pub fn main(init: std.process.Init) !void {
     //const home = init.environ_map.get("HOME") orelse "(no HOME)";
     //std.debug.print("home: {s}\n", .{home});
     _ = try imf.get_imf_data(init.io, init.gpa);
+
+    
+    std.debug.print("{d}\n", .{zig_core.add(1, 2)});
 
 }
 

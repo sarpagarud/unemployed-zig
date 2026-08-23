@@ -19,6 +19,13 @@ pub fn build(b: *std.Build) void {
             },
         }),
     });
+
+    const zig_core = b.dependency("zig_core", .{
+        .target = target,
+        .optimize = optimize,
+    });
+    exe.root_module.addImport("zig-core", zig_core.module("zig_core"));
+
     b.installArtifact(exe);
     b.installDirectory(.{
         .source_dir = b.path("data"),
