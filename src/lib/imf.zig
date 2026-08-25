@@ -3,6 +3,8 @@ const std = @import("std");
 const globals = @import("globals.zig");
 const csv = @import("csv.zig");
 
+const zig_core = @import("zig-core");
+
 pub fn get_imf_data(
   io: std.Io,
   allocator: std.mem.Allocator
@@ -47,4 +49,9 @@ pub fn get_imf_data(
       std.debug.print("{s} = {s}\n", .{ e.key_ptr.*, e.value_ptr.* });
     }
   }
+
+  const _csv = try zig_core.csv.Csv.init(io, allocator, csv_path);
+  defer _csv.deinit();
+  try _csv.print_headers();
+
 }

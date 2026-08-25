@@ -3,8 +3,8 @@
     .version = "0.16.0",
     .dependencies = .{
         .zig_core = .{
-            .url = "git+https://github.com/sarpagarud/zig-core#3d571bbc0e4053ca5e3c66c4e379d38e0ac96d04",
-            .hash = "zig_core-0.0.0-Tl2xjlU3AACnj49rfxnUsH9-YHCPrFVqQEW3EYV-AeRv",
+            .url = "git+https://github.com/sarpagarud/zig-core#b0c190593ebed057307f5fa46319f92986612bae",
+            .hash = "zig_core-0.0.0-Tl2xjro3AADb81xkV_r4eqFprioocHE-AskXUg2eJ5_J",
         },
     },
     .paths = .{""},

@@ -22,6 +22,8 @@ pub fn main(init: std.process.Init) !void {
     
     std.debug.print("{d}\n", .{zig_core.add(1, 2)});
 
+    try zig_core.hello();
+
 }
 
 // exe=succeed
