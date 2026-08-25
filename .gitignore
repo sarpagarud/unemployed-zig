@@ -4,3 +4,4 @@ zig-out/
 zig
 zig-x86_64-linux-0.16.0
 zig-pkg/
+z/

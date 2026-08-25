@@ -1,0 +1,1 @@
+cd ./src/ && zig fetch --save git+https://github.com/sarpagarud/zig-core
