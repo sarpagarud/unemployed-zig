@@ -5,6 +5,40 @@ const csv = @import("csv.zig");
 
 const zig_core = @import("zig-core");
 
+const IMF = struct {
+  arena: std.heap.ArenaAllocator,
+  _csv: zig_core.csv.Csv,
+
+
+  fn arena_allocator(self: *IMF) std.mem.Allocator {
+      return self.arena.allocator();
+  }
+
+  pub fn init(
+    io: std.Io,
+    allocator: std.mem.Allocator
+  ) !IMF {
+    const arena = std.heap.ArenaAllocator.init(allocator);
+    const path = globals.data.get("data_path").?;
+    const cwd = try std.process.currentPathAlloc(io, allocator);
+    defer allocator.free(cwd);
+    const csv_path = try std.fs.path.resolve(allocator, &.{ cwd, path, "weo.csv" });
+    defer allocator.free(csv_path); 
+    const _csv = try zig_core.csv.Csv.init(io, allocator, csv_path);
+    return .{
+      .arena: arena,
+      ._csv: _csv,
+    } 
+  }
+
+  pub fn deinit(self *const IMF) !void {
+    errdefer self._csv.deinit();
+  }
+
+};
+
+
+
 pub fn get_imf_data(
   io: std.Io,
   allocator: std.mem.Allocator
