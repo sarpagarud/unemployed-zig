@@ -9,6 +9,33 @@ const IMF = struct {
   arena: std.heap.ArenaAllocator,
   _csv: zig_core.csv.Csv,
 
+  pub fn print(
+    self: *const IMF, 
+    key: []const u8, 
+    value: []const u8
+  ) !void {
+    for(self._csv.rows.items) |row| {
+      if (key.len != 0 and value.len != 0) {
+        const cell = row.get(key) orelse return;
+        if (!std.mem.eql(u8, cell, value)) continue;
+      }
+      const COUNTRY = row.get("COUNTRY") orelse "";
+      const INDICATOR = row.get("INDICATOR") orelse "";
+      const OBS_VALUE = row.get("OBS_VALUE") orelse "";
+      const TIME_PERIOD = row.get("TIME_PERIOD") orelse "";
+      const SCALE = row.get("SCALE") orelse "";
+      const UNIT = row.get("UNIT") orelse "";
+      const COUNTRY_UPDATE_DATE = row.get("COUNTRY_UPDATE_DATE") orelse "";
+
+      const value = OBS_VALUE / std.math.pow(f64, 10.0, @floatFromInt(SCALE));
+      const indicator = globals.IMF_INDICATORS.get(INDICATOR).? orelse INDICATOR;
+
+      std.debug.print("{s}\t{s}\t{s}\t{any}\t{s}\t{s}\n", .{
+        COUNTRY, indicator, TIME_PERIOD, 
+        value, UNIT, COUNTRY_UPDATE_DATE
+      });
+    }
+  }
 
   fn arena_allocator(self: *IMF) std.mem.Allocator {
       return self.arena.allocator();
