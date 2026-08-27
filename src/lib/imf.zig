@@ -27,7 +27,8 @@ const IMF = struct {
       const UNIT = row.get("UNIT") orelse "";
       const COUNTRY_UPDATE_DATE = row.get("COUNTRY_UPDATE_DATE") orelse "";
 
-      const value = OBS_VALUE / std.math.pow(f64, 10.0, @floatFromInt(SCALE));
+      const scale = try std.fmt.parseInt(i32, SCALE, 10);
+      const value = OBS_VALUE / std.math.pow(f64, 10.0, @floatFromInt(scale));
       const indicator = globals.IMF_INDICATORS.get(INDICATOR).? orelse INDICATOR;
 
       std.debug.print("{s}\t{s}\t{s}\t{any}\t{s}\t{s}\n", .{
