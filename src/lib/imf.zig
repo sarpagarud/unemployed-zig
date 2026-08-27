@@ -6,12 +6,12 @@ const csv = @import("csv.zig");
 const zig_core = @import("zig-core");
 
 const ImfData = struct {
-    year: i32,
+    year: []const u8,
     gdp: f64,
-    unemp: f64,
+    unemployment_rate: f64,
 };
 
-const IMF = struct {
+pub const IMF = struct {
   arena: std.heap.ArenaAllocator,
   _csv: zig_core.csv.Csv,
 
@@ -25,6 +25,8 @@ const IMF = struct {
         const cell = row.get(key) orelse return;
         if (!std.mem.eql(u8, cell, value)) continue;
       }
+      const cell = row.get("TIME_PERIOD") orelse return;
+      if (!std.mem.eql(u8, cell, "2026")) continue;
       const COUNTRY = row.get("COUNTRY") orelse "";
       const INDICATOR = row.get("INDICATOR") orelse "";
       const OBS_VALUE = row.get("OBS_VALUE") orelse "";
@@ -32,78 +34,104 @@ const IMF = struct {
       const SCALE = row.get("SCALE") orelse "";
       const UNIT = row.get("UNIT") orelse "";
       const COUNTRY_UPDATE_DATE = row.get("COUNTRY_UPDATE_DATE") orelse "";
-
+      
+      const country = COUNTRY;
+      const indicator = globals.IMF_INDICATORS.get(INDICATOR) orelse INDICATOR;
       const scale = try std.fmt.parseInt(i32, SCALE, 10);
-      const value = OBS_VALUE / std.math.pow(f64, 10.0, @floatFromInt(scale));
-      const indicator = globals.IMF_INDICATORS.get(INDICATOR).? orelse INDICATOR;
+      var obs_value = try std.fmt.parseFloat(f64, OBS_VALUE);
+      obs_value = obs_value / std.math.pow(f64, 10.0, @floatFromInt(scale));
+      const time_period = TIME_PERIOD;
+      const unit = UNIT;
+      const country_update_date = COUNTRY_UPDATE_DATE;
+      
 
       std.debug.print("{s}\t{s}\t{s}\t{any}\t{s}\t{s}\n", .{
-        COUNTRY, indicator, TIME_PERIOD, 
-        value, UNIT, COUNTRY_UPDATE_DATE
+        country, indicator, time_period, 
+        obs_value, unit, country_update_date
       });
     }
   }
 
   pub fn create_svg(
     self: *const IMF, 
-    key: []const u8, 
-    value: []const u8
+    country_code: []const u8, 
   ) !void {
+    const allocator = self.arena_allocator();
+    const data = std.ArrayList([]ImfData);
     for(self._csv.rows.items) |row| {
-      if (key.len != 0 and value.len != 0) {
-        const cell = row.get(key) orelse return;
-        if (!std.mem.eql(u8, cell, value)) continue;
-      }
+      const cell = row.get("country") orelse return;
+      if (!std.mem.eql(u8, cell, country_code)) continue;
       const COUNTRY = row.get("COUNTRY") orelse "";
       const INDICATOR = row.get("INDICATOR") orelse "";
       const OBS_VALUE = row.get("OBS_VALUE") orelse "";
       const TIME_PERIOD = row.get("TIME_PERIOD") orelse "";
       const SCALE = row.get("SCALE") orelse "";
-      const UNIT = row.get("UNIT") orelse "";
-      const COUNTRY_UPDATE_DATE = row.get("COUNTRY_UPDATE_DATE") orelse "";
-
-      const scale = try std.fmt.parseInt(i32, SCALE, 10);
-      const value = OBS_VALUE / std.math.pow(f64, 10.0, @floatFromInt(scale));
-      const indicator = globals.IMF_INDICATORS.get(INDICATOR).? orelse INDICATOR;
-
       
+      const country = COUNTRY;
+      const indicator = globals.IMF_INDICATORS.get(INDICATOR) orelse INDICATOR;
+      const scale = try std.fmt.parseInt(i32, SCALE, 10);
+      var obs_value = try std.fmt.parseFloat(f64, OBS_VALUE);
+      obs_value = obs_value / std.math.pow(f64, 10.0, @floatFromInt(scale));
+      const time_period = TIME_PERIOD;
+      _ = indicator;
+      _ = country;
+
+      data.appendSlice(allocator, .{
+        .year = time_period,
+        .gdp = 0.0,
+        .unemployment_rate = 0.0,
+      });
+
     }
   }
 
   pub fn create_svg_content(
     self: *const IMF, 
-    data: [_]ImfData,
+    data: []ImfData,
   ) !void {
-      // SVG canvas size
-      const width: f64 = 900;
-      const height: f64 = 620;
-      const margin_left: f64 = 80;
-      const margin_right: f64 = 40;
-      const margin_top: f64 = 60;
-      const margin_bottom: f64 = 80;
-  
-      const plot_w = width - margin_left - margin_right;
-      const plot_h = height - margin_top - margin_bottom;
-  
-      // Data ranges (with padding)
-      const gdp_min: f64 = -3.0;
-      const gdp_max: f64 = 7.0;
-      const unemp_min: f64 = 2.5;
-      const unemp_max: f64 = 10.5;
-  
-      // Helper: map data → SVG coordinates
-      const mapX = struct {
-          fn f(v: f64) f64 {
-              return margin_left + (v - gdp_min) / (gdp_max - gdp_min) * plot_w;
-          }
-      }.f;
-  
-      const mapY = struct {
-          fn f(v: f64) f64 {
-              return margin_top + (unemp_max - v) / (unemp_max - unemp_min) * plot_h;
-          }
-      }.f;
-    }
+    _ = self;
+    _ = data;
+    // SVG canvas size
+    const width: f64 = 900;
+    const height: f64 = 620;
+    const margin_left: f64 = 80;
+    const margin_right: f64 = 40;
+    const margin_top: f64 = 60;
+    const margin_bottom: f64 = 80;
+
+    const plot_w = width - margin_left - margin_right;
+    const plot_h = height - margin_top - margin_bottom;
+
+    // Data ranges (with padding)
+    const gdp_min: f64 = -3.0;
+    const gdp_max: f64 = 7.0;
+    const unemp_min: f64 = 2.5;
+    const unemp_max: f64 = 10.5;
+
+    // Helper: map data → SVG coordinates
+    const mapX = struct {
+        fn f(v: f64) f64 {
+            return margin_left + (v - gdp_min) / (gdp_max - gdp_min) * plot_w;
+        }
+    }.f;
+
+    const mapY = struct {
+        fn f(v: f64) f64 {
+            return margin_top + (unemp_max - v) / (unemp_max - unemp_min) * plot_h;
+        }
+    }.f;
+
+    _ = mapX;
+
+    _ = mapY;
+
+
+    std.debug.print(
+    // this
+    // is
+    // a a text 
+    );
+
   }
 
   fn arena_allocator(self: *IMF) std.mem.Allocator {
@@ -122,15 +150,15 @@ const IMF = struct {
     defer allocator.free(csv_path); 
     const _csv = try zig_core.csv.Csv.init(io, allocator, csv_path);
     return .{
-      .arena: arena,
-      ._csv: _csv,
-    } 
+      .arena = arena,
+      ._csv = _csv,
+    };
   }
 
-  pub fn deinit(self *const IMF) !void {
-    errdefer self._csv.deinit();
+  pub fn deinit(self: *const IMF) void {
+    defer self._csv.deinit();
+    defer self.arena.deinit();
   }
-
 };
 
 

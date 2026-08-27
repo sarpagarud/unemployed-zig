@@ -17,8 +17,12 @@ pub fn main(init: std.process.Init) !void {
 
     //const home = init.environ_map.get("HOME") orelse "(no HOME)";
     //std.debug.print("home: {s}\n", .{home});
-    _ = try imf.get_imf_data(init.io, init.gpa);
+    //_ = try imf.get_imf_data(init.io, init.gpa);
 
+    const _imf = try imf.IMF.init(init.io, init.gpa);
+    defer _imf.deinit();
+    try _imf.print("COUNTRY", "IND");
+    try _imf.create_svg("IND");
     
     std.debug.print("{d}\n", .{zig_core.add(1, 2)});
 
