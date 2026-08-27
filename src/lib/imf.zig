@@ -14,6 +14,7 @@ const ImfData = struct {
 pub const IMF = struct {
   arena: std.heap.ArenaAllocator,
   _csv: zig_core.csv.Csv,
+  status: []const u8 = "",
 
   pub fn print(
     self: *const IMF, 
@@ -53,11 +54,11 @@ pub const IMF = struct {
   }
 
   pub fn create_svg(
-    self: *const IMF, 
+    self: *IMF, 
     country_code: []const u8, 
   ) !void {
     const allocator = self.arena_allocator();
-    const data = std.ArrayList([]ImfData);
+    var data:std.ArrayList(ImfData) = .empty;
     for(self._csv.rows.items) |row| {
       const cell = row.get("country") orelse return;
       if (!std.mem.eql(u8, cell, country_code)) continue;
@@ -76,7 +77,7 @@ pub const IMF = struct {
       _ = indicator;
       _ = country;
 
-      data.appendSlice(allocator, .{
+      try data.append(allocator, .{
         .year = time_period,
         .gdp = 0.0,
         .unemployment_rate = 0.0,
@@ -149,10 +150,12 @@ pub const IMF = struct {
     const csv_path = try std.fs.path.resolve(allocator, &.{ cwd, path, "weo.csv" });
     defer allocator.free(csv_path); 
     const _csv = try zig_core.csv.Csv.init(io, allocator, csv_path);
-    return .{
+    var imf = IMF{
       .arena = arena,
       ._csv = _csv,
     };
+    imf.status = "loaded";
+    return imf;
   }
 
   pub fn deinit(self: *const IMF) void {

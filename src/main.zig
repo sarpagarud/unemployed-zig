@@ -19,7 +19,7 @@ pub fn main(init: std.process.Init) !void {
     //std.debug.print("home: {s}\n", .{home});
     //_ = try imf.get_imf_data(init.io, init.gpa);
 
-    const _imf = try imf.IMF.init(init.io, init.gpa);
+    var _imf = try imf.IMF.init(init.io, init.gpa);
     defer _imf.deinit();
     try _imf.print("COUNTRY", "IND");
     try _imf.create_svg("IND");
