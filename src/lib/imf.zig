@@ -90,7 +90,7 @@ pub const IMF = struct {
     self: *const IMF, 
     data: []ImfData,
   ) !void {
-    _ = self;
+    //_ = self;
     _ = data;
     // SVG canvas size
     const width: f64 = 900;
@@ -133,7 +133,34 @@ pub const IMF = struct {
       ,.{width, height, width, height, width, height, width, height}
     ) catch unreachable;
 
+    _ = self.get_svg(width, height);
 
+  }
+
+  pub fn get_svg(
+    width: f64,
+    height: f64
+  ) !void {
+
+    const background = std.fmt.format(
+      \\<rect x="{d}" y="{d}" width="{d}" height="{d}" fill="#ffffff" stroke="#ddd" stroke-width="1"/>
+      ,.{width, height, width, height}
+    ) catch unreachable;
+
+    const data = std.fmt.format(
+      \\<circle cx="{d:.1}" cy="{d:.1}" r="7" class="point"/>
+      ,.{1, 1}
+    ) catch unreachable;
+
+
+    _ = std.fmt.format(
+      \\<?xml version="1.0" encoding="UTF-8"?>
+      \\<svg xmlns="http://www.w3.org/2000/svg" width="{d}" height="{d}" viewBox="0 0 {d} {d}">
+      \\{s}
+      \\<g>{s}</g>
+      \\</svg>
+      ,.{width, height, background, data}
+    ) catch unreachable;
   }
 
   fn arena_allocator(self: *IMF) std.mem.Allocator {
