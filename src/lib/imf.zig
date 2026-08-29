@@ -59,6 +59,7 @@ pub const IMF = struct {
   ) !void {
     const allocator = self.arena_allocator();
     var data:std.ArrayList(ImfData) = .empty;
+    try self.create_svg_content(data);
     for(self._csv.rows.items) |row| {
       const cell = row.get("country") orelse return;
       if (!std.mem.eql(u8, cell, country_code)) continue;
@@ -84,12 +85,14 @@ pub const IMF = struct {
       });
 
     }
+    try self.create_svg_content(data);
   }
 
   pub fn create_svg_content(
-    self: *const IMF, 
-    data: []ImfData,
+    self: *IMF, 
+    data: std.ArrayList(ImfData),
   ) !void {
+    const allocator = self.arena_allocator();
     //_ = self;
     _ = data;
     // SVG canvas size
@@ -126,41 +129,56 @@ pub const IMF = struct {
 
     _ = mapY;
 
-    _ = std.fmt.format(
+    _ = std.fmt.allocPrint(allocator, 
       \\<?xml version="1.0" encoding="UTF-8"?>
       \\<svg xmlns="http://www.w3.org/2000/svg" width="{d}" height="{d}" viewBox="0 0 {d} {d}">
       \\<rect x="{d}" y="{d}" width="{d}" height="{d}" fill="#ffffff" stroke="#ddd" stroke-width="1"/>
       ,.{width, height, width, height, width, height, width, height}
     ) catch unreachable;
 
-    _ = self.get_svg(width, height);
+    const svg = try self.get_svg(width, height);
 
+    //std.debug.print("{s}\n", .{svg});
+
+    var threaded: std.Io.Threaded = .init_single_threaded;
+    const io = threaded.io();
+    //const f = try std.Io.Dir.cwd().openFile(io, "./g.svg", .{ .mode = .write_only });
+    //defer f.close(io);
+    //try f.writeStreamingAll(io, svg);
+
+    try std.Io.Dir.cwd().writeFile(io, .{
+      .sub_path = "./g.svg",
+      .data = svg,
+    });
   }
 
   pub fn get_svg(
+    self: *IMF, 
     width: f64,
     height: f64
-  ) !void {
-
-    const background = std.fmt.format(
+  ) ![]const u8 {
+    const allocator = self.arena_allocator();
+    const background = std.fmt.allocPrint(allocator,
       \\<rect x="{d}" y="{d}" width="{d}" height="{d}" fill="#ffffff" stroke="#ddd" stroke-width="1"/>
-      ,.{width, height, width, height}
+      ,.{0, 0, width, height}
     ) catch unreachable;
 
-    const data = std.fmt.format(
+    const data = std.fmt.allocPrint(allocator,
       \\<circle cx="{d:.1}" cy="{d:.1}" r="7" class="point"/>
       ,.{1, 1}
     ) catch unreachable;
 
 
-    _ = std.fmt.format(
+    const svg = std.fmt.allocPrint(allocator,
       \\<?xml version="1.0" encoding="UTF-8"?>
       \\<svg xmlns="http://www.w3.org/2000/svg" width="{d}" height="{d}" viewBox="0 0 {d} {d}">
       \\{s}
       \\<g>{s}</g>
       \\</svg>
-      ,.{width, height, background, data}
+      ,.{width, height, width, height, background, data}
     ) catch unreachable;
+
+    return svg;
   }
 
   fn arena_allocator(self: *IMF) std.mem.Allocator {
