@@ -126,12 +126,13 @@ pub const IMF = struct {
 
     _ = mapY;
 
+    _ = std.fmt.format(
+      \\<?xml version="1.0" encoding="UTF-8"?>
+      \\<svg xmlns="http://www.w3.org/2000/svg" width="{d}" height="{d}" viewBox="0 0 {d} {d}">
+      \\<rect x="{d}" y="{d}" width="{d}" height="{d}" fill="#ffffff" stroke="#ddd" stroke-width="1"/>
+      ,.{width, height, width, height, width, height, width, height}
+    ) catch unreachable;
 
-    std.debug.print(
-    // this
-    // is
-    // a a text 
-    );
 
   }
 
