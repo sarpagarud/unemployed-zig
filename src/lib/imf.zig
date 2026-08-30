@@ -11,6 +11,12 @@ const ImfData = struct {
     unemployment_rate: f64,
 };
 
+const ImfGraphData = struct {
+    year: std.ArrayList([]const u8) = .empty,
+    gdp: std.ArrayList(f64) = 0.0,
+    unemployment: std.ArrayList(f64) = 0.0,
+};
+
 pub const IMF = struct {
   arena: std.heap.ArenaAllocator,
   _csv: zig_core.csv.Csv,
@@ -62,6 +68,7 @@ pub const IMF = struct {
     std.debug.print("{s}\n", .{"create_svg start"});
     const allocator = self.arena_allocator();
     var data:std.ArrayList(ImfData) = .empty;
+    var imf_data = ImfGraphData{};
     for(self._csv.rows.items) |row| {
       const cell = row.get("COUNTRY") orelse continue;
       if (!std.mem.eql(u8, cell, country_code)) continue;
@@ -86,6 +93,15 @@ pub const IMF = struct {
 
       std.debug.print("{s} {s} {any}\n", .{time_period, INDICATOR, obs_value});
 
+      if(std.mem.eql(u8, INDICATOR, "LUR")) {
+        imf_data.unemployment.append(allocator, obs_value);
+      }
+      if(std.mem.eql(u8, INDICATOR, "NGAP_NPGDP")) {
+        imf_data.gdp.append(allocator, obs_value);
+      }
+      if(std.mem.eql(u8, INDICATOR, "LUR")) {
+        imf_data.year.append(allocator, time_period);
+      }
 
       try data.append(allocator, .{
         .year = time_period,
@@ -94,13 +110,14 @@ pub const IMF = struct {
       });
 
     }
-    try self.create_svg_content(data);
+    try self.create_svg_content(data, imf_data);
     std.debug.print("{s}\n", .{"create_svg end"});
   }
 
   pub fn create_svg_content(
     self: *IMF, 
     data: std.ArrayList(ImfData),
+    imf_data: ImfGraphData,
   ) !void {
     std.debug.print("{s}\n", .{"create_svg_content"});
     //const allocator = self.arena_allocator();
@@ -147,6 +164,12 @@ pub const IMF = struct {
         e.year, e.unemployment_rate, e.unemployment_rate
       });
     }
+
+    std.debug.print("{s}\n", .{"----------"});
+    for(imf_data.gdp.items, 0..) |v, i| {
+      std.debug.print("{d}. {any}\n", .{i+1, v});
+    }
+
 
     const svg = try self.get_svg(width, height);
 
