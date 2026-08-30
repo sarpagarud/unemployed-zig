@@ -21,8 +21,8 @@ pub fn main(init: std.process.Init) !void {
 
     var _imf = try imf.IMF.init(init.io, init.gpa);
     defer _imf.deinit();
-    try _imf.print("COUNTRY", "IND");
-    try _imf.create_svg("IND");
+    try _imf.print("COUNTRY", "USA");
+    try _imf.create_svg("USA");
     
     std.debug.print("{d}\n", .{zig_core.add(1, 2)});
 

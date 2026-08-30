@@ -35,6 +35,8 @@ pub const IMF = struct {
       const SCALE = row.get("SCALE") orelse "";
       const UNIT = row.get("UNIT") orelse "";
       const COUNTRY_UPDATE_DATE = row.get("COUNTRY_UPDATE_DATE") orelse "";
+      //const UNEMPLOYMENT = row.get("UNEMPLOYMENT") orelse "";
+      //_ = try std.fmt.parseFloat(f64, UNEMPLOYMENT);
       
       const country = COUNTRY;
       const indicator = globals.IMF_INDICATORS.get(INDICATOR) orelse INDICATOR;
@@ -57,17 +59,21 @@ pub const IMF = struct {
     self: *IMF, 
     country_code: []const u8, 
   ) !void {
+    std.debug.print("{s}\n", .{"create_svg start"});
     const allocator = self.arena_allocator();
     var data:std.ArrayList(ImfData) = .empty;
-    try self.create_svg_content(data);
     for(self._csv.rows.items) |row| {
-      const cell = row.get("country") orelse return;
+      const cell = row.get("COUNTRY") orelse continue;
       if (!std.mem.eql(u8, cell, country_code)) continue;
       const COUNTRY = row.get("COUNTRY") orelse "";
       const INDICATOR = row.get("INDICATOR") orelse "";
       const OBS_VALUE = row.get("OBS_VALUE") orelse "";
       const TIME_PERIOD = row.get("TIME_PERIOD") orelse "";
       const SCALE = row.get("SCALE") orelse "";
+      if(
+        !std.mem.eql(u8, INDICATOR, "LUR") and 
+        !std.mem.eql(u8, INDICATOR, "NGAP_NPGDP")
+      ) continue;
       
       const country = COUNTRY;
       const indicator = globals.IMF_INDICATORS.get(INDICATOR) orelse INDICATOR;
@@ -78,23 +84,28 @@ pub const IMF = struct {
       _ = indicator;
       _ = country;
 
+      std.debug.print("{s} {s} {any}\n", .{time_period, INDICATOR, obs_value});
+
+
       try data.append(allocator, .{
         .year = time_period,
         .gdp = 0.0,
-        .unemployment_rate = 0.0,
+        .unemployment_rate = obs_value,
       });
 
     }
     try self.create_svg_content(data);
+    std.debug.print("{s}\n", .{"create_svg end"});
   }
 
   pub fn create_svg_content(
     self: *IMF, 
     data: std.ArrayList(ImfData),
   ) !void {
-    const allocator = self.arena_allocator();
+    std.debug.print("{s}\n", .{"create_svg_content"});
+    //const allocator = self.arena_allocator();
     //_ = self;
-    _ = data;
+    //_ = data;
     // SVG canvas size
     const width: f64 = 900;
     const height: f64 = 620;
@@ -129,23 +140,18 @@ pub const IMF = struct {
 
     _ = mapY;
 
-    _ = std.fmt.allocPrint(allocator, 
-      \\<?xml version="1.0" encoding="UTF-8"?>
-      \\<svg xmlns="http://www.w3.org/2000/svg" width="{d}" height="{d}" viewBox="0 0 {d} {d}">
-      \\<rect x="{d}" y="{d}" width="{d}" height="{d}" fill="#ffffff" stroke="#ddd" stroke-width="1"/>
-      ,.{width, height, width, height, width, height, width, height}
-    ) catch unreachable;
+    std.debug.print("{d}\n", .{data.items.len});
+
+    for(data.items) |e| {
+      std.debug.print("{s} {any} {any}\n", .{
+        e.year, e.unemployment_rate, e.unemployment_rate
+      });
+    }
 
     const svg = try self.get_svg(width, height);
 
-    //std.debug.print("{s}\n", .{svg});
-
     var threaded: std.Io.Threaded = .init_single_threaded;
     const io = threaded.io();
-    //const f = try std.Io.Dir.cwd().openFile(io, "./g.svg", .{ .mode = .write_only });
-    //defer f.close(io);
-    //try f.writeStreamingAll(io, svg);
-
     try std.Io.Dir.cwd().writeFile(io, .{
       .sub_path = "./g.svg",
       .data = svg,
