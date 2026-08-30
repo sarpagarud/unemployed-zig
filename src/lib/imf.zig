@@ -201,7 +201,8 @@ pub const IMF = struct {
     defer allocator.free(cwd);
     const csv_path = try std.fs.path.resolve(allocator, &.{ cwd, path, "weo.csv" });
     defer allocator.free(csv_path); 
-    const _csv = try zig_core.csv.Csv.init(io, allocator, csv_path);
+    var _csv = try zig_core.csv.Csv.init(io, allocator, csv_path);
+    try _csv.test_create_csv(io, allocator, csv_path);
     var imf = IMF{
       .arena = arena,
       ._csv = _csv,
