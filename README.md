@@ -75,6 +75,9 @@ $$
 - U5: U4 + other "marginally attached workers," or "loosely attached workers", or those who "would like" and are able to work but have not looked for work recently.
 - U6: U5 + Part-time workers who want to work full-time, but cannot for economic reasons (underemployment).
 
+## Unemployment Rate (IMF)
+https://www.imf.org/external/datamapper/LUR@WEO/OEMDC/USA
+
 [Check](https://github.com/sarpagarud/unemployed-zig/blob/main/src/lib/calculations.zig) to see calculations
 ## Sources
 - ILOSTAT
