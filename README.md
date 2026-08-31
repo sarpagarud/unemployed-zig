@@ -78,7 +78,8 @@ $$
 [Check](https://github.com/sarpagarud/unemployed-zig/blob/main/src/lib/calculations.zig) to see calculations
 
 ## Unemployment Rate (IMF)
-https://www.imf.org/external/datamapper/LUR@WEO/OEMDC/USA
+[LUR](https://www.imf.org/external/datamapper/LUR@WEO/OEMDC/USA)
+<a href="https://www.imf.org/external/datamapper/LUR@WEO/OEMDC/USA" target="_blank" rel="noopener noreferrer">Unemployment Rate IMF Page</a>
 
 ## Sources
 - ILOSTAT
