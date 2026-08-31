@@ -1,8 +1,8 @@
 # unemployed-zig
 
 ## Unemployment
-Unemployment is the state of wanting work but lacking a job. Unemployed [ˌʌnɪmˈplɔɪd] is without a paid job but available to work. The unemployed are not unemployable.  
-Most face temporary barriers—economy, skills gaps, location, trust etc. not permanent inability.  
+Unemployment is the state of wanting work but lacking a job. Unemployed [ˌʌnɪmˈplɔɪd] is without a paid job but available to work. 
+The unemployed are not unemployable. Most face temporary barriers—economy, skills gaps, location, trust etc. not permanent inability.  
 
 > [!NOTE]
 > The whole purpose of unemployed zig repo is to understand unemployment.  
